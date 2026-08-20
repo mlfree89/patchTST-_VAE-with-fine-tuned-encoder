@@ -1,0 +1,10 @@
+Predictive model with a probabilistic head (VAE) attached on top of a transformer backbone.
+Transformer (PatchTST): patches the input history, embeds and contextualizes it via self-attention → produces embedding h
+Encoder = transformer + bottleneck: h  is flattened and passed through two linear heads that output the parameters of the approximate posterior q(z|x_past)
+Shared auxiliary RV: 𝑧 is the same random variable on both sides — the encoder outputs the parameters of its distribution and samples it, then the decoder consumes that exact sampled 
+z as input. It isn't duplicated or re-defined; it's passed through.
+Decoder: maps that same z to the parameters of the likelihood p(x_future|z) (here, a Gaussian mean under MSE loss).
+What actually differs is not 𝑧 itself but the role each network plays relative to it:
+Encoder → distribution over 𝑧 (posterior, conditioned on input)
+Decoder → distribution conditioned on 𝑧 (likelihood, over the output)
+Training objective (ELBO): reconstruction loss (likelihood term) + β·KL(posterior ‖ prior), jointly optimizing encoder and decoder end-to-end.
